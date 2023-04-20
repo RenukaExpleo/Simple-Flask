@@ -101,8 +101,8 @@ def drop_column():
 
 
 @app.route('/info')
-def info():
-    global df 
+def info(df):
+    # global df 
     global null_count
     
     data_types = df.dtypes.reset_index()
