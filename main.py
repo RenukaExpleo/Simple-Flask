@@ -113,12 +113,12 @@ def info():
     data_types = pd.merge(data_types, non_null_count, on='Column Name')
     data_types = pd.merge(data_types, null_count, on='Column Name')
     
-    
     d_types = df.dtypes.unique()
     df_types = pd.DataFrame({"Data types":d_types}).to_html()
     df_new = pd.DataFrame({'Total Rows': [len(df)], 'Total Columns': [len(df.columns)]})
     
     return render_template('page1.html', data=data_types.to_html(index=False, justify='left'), total=df_new.to_html(index=False, justify='left'),d_types=d_types)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
