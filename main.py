@@ -1,58 +1,12 @@
-# import pandas as pd
-# from flask import *
-# import os
-# import stat
-
-# app = Flask(__name__)
-
-# global df
-# global selected_columns
-# global text_col
-
-# @app.route('/') 
-# def index():
-#     return render_template("index.html")
-
-# @app.route('/', methods = ['POST'])
-# def uploadFile():
-#     global text_col
-#     file = request.files['file']
-#     if file.filename.endswith('.csv'):
-#         file_path = os.path.join('tmp/', file.filename)
-#         # file.save(file_path)
-#         df = pd.read_csv(file_path)
-#         df.to_csv(file_path, index=False)
-#         os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)
-        
-#     elif file.filename.endswith('.xlsx'):
-#         df = pd.read_excel(file)
-#     else:
-#         return "Invalid file format. Please upload a CSV or Excel file."
-#     text_col = []
-#     for i in df.columns:
-#         if df[i].dtype == 'object':
-#             text_col.append(i)
-#     if len(text_col)>1:
-#         return render_template('page1.html', text_col=text_col) 
-#     return render_template('page1.html')
-
-
-# @app.route('/preview')
-# def previewData():
-# # global text_col
-#    df = pd.read_csv('tmp/'+'HousingData.csv')
-#    data_head =df.head().to_html()
-#    n_rows = df.shape[0]
-#    n_cols = df.shape[1]
-#    return render_template('page1.html', data_head = data_head, n_rows=n_rows, n_cols=n_cols, text_col=text_col)
-
-# if __name__ == '__main__':  
-#     app.run(debug=True)
 import pandas as pd
 from flask import *
 import os
 import stat
 import tempfile
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg')
+import seaborn as sns
 
 app = Flask(__name__)
 
@@ -119,6 +73,57 @@ def info():
     df_new = pd.DataFrame({'Total Rows': [len(df)], 'Total Columns': [len(df.columns)]})
     
     return render_template('page1.html', data=data_types.to_html(index=False, justify='left'), total=df_new.to_html(index=False, justify='left'),d_types=d_types)
+
+@app.route('/show_describe')
+def showDes():
+    df = pd.read_csv('tmp/'+'HousingData.csv')
+    uploaded_df=df.describe()
+    uploaded_df_html =uploaded_df.to_html(justify='left')
+    return render_template('page1.html', data_des = uploaded_df_html)
+
+@app.route('/showCorr')
+def showCorr():
+    df = 'tmp/HousingData.csv'
+    if os.path.isfile(df):
+        df = pd.read_csv(df)
+        corr_matrix = df.corr()
+        corr_matrix_html = corr_matrix.to_html(justify='left')
+        plt.figure(figsize=(10,10))
+        sns.heatmap(corr_matrix, annot=True)
+        plt_file = "static/img3.png"
+        plt.savefig(plt_file)
+        return render_template('page1.html', data_corr=corr_matrix_html, heatmap=plt_file)
+    else:
+        return 'Error: CSV file not found'
+
+# @app.route('/histogram')
+# def histogram():
+#     # global df
+#     df = pd.read_csv('tmp/'+'HousingData.csv')
+#     df=df
+
+#     num_rows = (len(df.columns) + 2) // 3  # Calculate the number of rows needed
+#     fig, axes = plt.subplots(nrows=num_rows, ncols=3, figsize=(10,15))
+#     extra_graphs = num_rows * 3 - len(df.columns)
+#     # Create a boxplot for each column in the DataFrame
+#     for i, col in enumerate(df.columns):
+#         sns.histplot(data=df, x=col, ax=axes[i // 3, i % 3])
+    
+#     for j in range(1, extra_graphs+1):
+#         fig.delaxes(axes[num_rows-1][-j])
+
+#     plt.suptitle('Histogram For Data Frame')
+#     file = "static/img4.png"
+#     plt.savefig(file) 
+#     # return the image file 
+#     plt.tight_layout()    
+#     return render_template('visualization.html', histplot_url = file)
+
+
+# @app.route('/back')
+# def back():
+
+#     return render_template('page1.html')
 
 
 if __name__ == '__main__':
