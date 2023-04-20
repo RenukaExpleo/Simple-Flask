@@ -104,7 +104,7 @@ def drop_column():
 def info():
     # global df 
     global null_count
-    
+    df = pd.read_csv('tmp/'+'HousingData.csv')
     data_types = df.dtypes.reset_index()
     data_types.columns = ['Column Name', 'Data Type']
     non_null_count = df.count().reset_index()
