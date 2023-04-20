@@ -8,3 +8,6 @@ def home():
 @app.route("/about")
 def about():
     return "Hello about"
+
+if __name__ == '__main__':  
+    app.run(debug=True)
