@@ -59,6 +59,7 @@ app = Flask(__name__)
 global df
 global selected_columns
 global text_col
+text_col = []
 
 @app.route('/')
 def index():
@@ -83,7 +84,7 @@ def uploadFile():
 
 @app.route('/preview')
 def previewData():
-    global text_col
+    # global text_col
     df = pd.read_csv('tmp/'+'HousingData.csv')
     data_head = df.head().to_html()
     n_rows = df.shape[0]
