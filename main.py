@@ -1,6 +1,7 @@
 import pandas as pd
 from flask import *
 import os
+import stat
 
 app = Flask(__name__)
 
@@ -18,8 +19,11 @@ def uploadFile():
     file = request.files['file']
     if file.filename.endswith('.csv'):
         file_path = os.path.join('files/', file.filename)
-        file.save(file_path)
+        # file.save(file_path)
         df = pd.read_csv(file_path)
+        df.to_csv(file_path, index=False)
+        os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)
+        
     elif file.filename.endswith('.xlsx'):
         df = pd.read_excel(file)
     else:
