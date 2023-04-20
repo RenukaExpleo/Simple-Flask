@@ -83,11 +83,11 @@ def uploadFile():
 
 @app.route('/preview')
 def previewData():
-    global df
+    global text_col
+    df = pd.read_csv('tmp/'+'HousingData.csv')
     data_head = df.head().to_html()
     n_rows = df.shape[0]
     n_cols = df.shape[1]
-    # file_path = os.path.join('tmp/', df.index.name + '.csv')
     return render_template('page1.html', data_head=data_head, n_rows=n_rows, n_cols=n_cols, text_col=text_col)
 
 @app.route('/drop_col', methods=['POST'])
