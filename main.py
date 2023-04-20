@@ -39,8 +39,8 @@ def previewData():
     data_head =df.head().to_html(justify='left')
     n_rows = df.shape[0]
     n_cols = df.shape[1]
-    # return render_template('page1.html', data_head = data_head, n_rows=n_rows, n_cols=n_cols)
-    return "preview data"
+    return render_template('page1.html', data_head = data_head, n_rows=n_rows, n_cols=n_cols)
+    # return "preview data"
 
 if __name__ == '__main__':  
     app.run(debug=True)
