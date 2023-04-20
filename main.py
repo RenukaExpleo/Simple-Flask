@@ -90,5 +90,35 @@ def previewData():
     # file_path = os.path.join('tmp/', df.index.name + '.csv')
     return render_template('page1.html', data_head=data_head, n_rows=n_rows, n_cols=n_cols, text_col=text_col)
 
+@app.route('/drop_col', methods=['POST'])
+def drop_column():
+    column_name = request.form['column_name']
+    global df  # Use the global DataFrame
+    # global up_df
+    df = df.drop(columns=column_name)
+    return render_template('page1.html', df=df.head().to_html(justify='left'))
+
+
+@app.route('/info')
+def info():
+    global df 
+    global null_count
+    
+    data_types = df.dtypes.reset_index()
+    data_types.columns = ['Column Name', 'Data Type']
+    non_null_count = df.count().reset_index()
+    non_null_count.columns = ['Column Name', 'Non-Null Count']
+    null_count = df.isnull().sum().reset_index()
+    null_count.columns = ['Column Name', 'Null Count']
+    data_types = pd.merge(data_types, non_null_count, on='Column Name')
+    data_types = pd.merge(data_types, null_count, on='Column Name')
+    
+    
+    d_types = df.dtypes.unique()
+    df_types = pd.DataFrame({"Data types":d_types}).to_html()
+    df_new = pd.DataFrame({'Total Rows': [len(df)], 'Total Columns': [len(df.columns)]})
+    
+    return render_template('page1.html', data=data_types.to_html(index=False, justify='left'), total=df_new.to_html(index=False, justify='left'),d_types=d_types)
+
 if __name__ == '__main__':
     app.run(debug=True)
