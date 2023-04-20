@@ -52,6 +52,7 @@ import pandas as pd
 from flask import *
 import os
 import stat
+import tempfile
 
 app = Flask(__name__)
 
@@ -69,22 +70,16 @@ def uploadFile():
     global text_col
     file = request.files['file']
     if file.filename.endswith('.csv'):
-        file_path = os.path.join('tmp/', file.filename)
-        file.save(file_path)
-        df = pd.read_csv(file_path)
-        df.to_csv(file_path, index=False)
-        os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)
+        with tempfile.NamedTemporaryFile(mode='w+b', delete=False) as tmp:
+            file.save(tmp.name)
+            df = pd.read_csv(tmp.name)
+            text_col = [i for i in df.columns if df[i].dtype == 'object']
     elif file.filename.endswith('.xlsx'):
         df = pd.read_excel(file)
+        text_col = [i for i in df.columns if df[i].dtype == 'object']
     else:
         return "Invalid file format. Please upload a CSV or Excel file."
-    text_col = []
-    for i in df.columns:
-        if df[i].dtype == 'object':
-            text_col.append(i)
-    if len(text_col) > 1:
-        return render_template('page1.html', text_col=text_col)
-    return render_template('page1.html')
+    return render_template('page1.html', text_col=text_col)
 
 @app.route('/preview')
 def previewData():
