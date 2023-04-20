@@ -101,7 +101,7 @@ def drop_column():
 
 
 @app.route('/info')
-def info(df):
+def info():
     # global df 
     global null_count
     
