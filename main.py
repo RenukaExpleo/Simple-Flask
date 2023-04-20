@@ -18,7 +18,7 @@ def uploadFile():
     global text_col
     file = request.files['file']
     if file.filename.endswith('.csv'):
-        file_path = os.path.join('files/', file.filename)
+        file_path = os.path.join('tmp/', file.filename)
         # file.save(file_path)
         df = pd.read_csv(file_path)
         df.to_csv(file_path, index=False)
@@ -40,7 +40,7 @@ def uploadFile():
 @app.route('/preview')
 def previewData():
 # global text_col
-   df = pd.read_csv('files/'+'HousingData.csv')
+   df = pd.read_csv('tmp/'+'HousingData.csv')
    data_head =df.head().to_html()
    n_rows = df.shape[0]
    n_cols = df.shape[1]
